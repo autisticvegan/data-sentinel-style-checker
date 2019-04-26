@@ -1,7 +1,6 @@
 #include "StyleCheckerConfig.h"
 
-bool StyleCheckerConfig::IsCommentLine(std::string& str)
-{
+bool StyleCheckerConfig::IsCommentLine(std::string& str) {
 	return str.find("//") != std::string::npos;
 }
 
@@ -14,8 +13,7 @@ bool to_bool(std::string str) {
 	return b;
 }
 
-StyleCheckerConfig::StyleCheckerConfig(std::string& filepath)
-{
+StyleCheckerConfig::StyleCheckerConfig(std::string& filepath) {
 	rule_strings.push_back(FILE_EXTENSION);
 	rule_strings.push_back(CHECK_IMPORTS);
 	rule_strings.push_back(CHECK_LONG_LINES);
@@ -34,51 +32,43 @@ StyleCheckerConfig::StyleCheckerConfig(std::string& filepath)
 	std::vector<std::string> lines;
 	std::vector<int> line_counters;
 	// Filter out lines starting with //
-	while (std::getline(infile, currline))
-	{
-		if (!IsCommentLine(currline))
-		{
+	while (std::getline(infile, currline)) {
+		if (!IsCommentLine(currline)) {
 			lines.push_back(currline);
 		}
 	}
 	
-	if (rule_strings.size() != lines.size())
-	{
+	if (rule_strings.size() != lines.size()) {
 		throw "bad config";
 	}
 
 	// if we dont see a line or something goes wrong reading it, just set it to the default value
 	int linecounter = 0;
-	for (int i = 0; i < lines.size(); ++i)
-	{
+	for (int i = 0; i < lines.size(); ++i) {
 		size_t equals_at = lines[i].find(" = ");
 		
-		if (equals_at == std::string::npos || equals_at == 0)
-		{
+		if (equals_at == std::string::npos || equals_at == 0) {
 			continue;
 		}
 
 		//get string before =
 		std::string before_equals = lines[i].substr(0, equals_at);
 
-		if (before_equals != rule_strings[i])
-		{
+		if (before_equals != rule_strings[i]) {
 			continue;
 		}
 		// get string from end value, then depending on which number, turn it into a value type such as bool, string, or int
 
 		std::string after_equals = lines[i].substr(equals_at + 3);
 
-		switch (i) 
-		{
+		switch (i) {
 		case 0:
 			//string
 			file_extension = after_equals;
 			break;
 
 		// make sure this is not negative?
-		case 3:
-		{
+		case 3: {
 			//int
 			int vali = std::stoi(after_equals);
 			long_line_length = vali;
@@ -109,17 +99,12 @@ StyleCheckerConfig::StyleCheckerConfig(std::string& filepath)
 			else if (i == 10)
 				check_for_spark_to_be_first_param = val;
 		}
-		
-
 	}
-
-
 }
 
 //output function: in case we run without a config file, 
 //this will put a default config in the directory of where the program is running.
-void StyleCheckerConfig::OutputConfigToTxtFile(std::string& filepath)
-{
+void StyleCheckerConfig::OutputConfigToTxtFile(std::string& filepath) {
 	std::ofstream outfile;
 	outfile.open(filepath);
 
